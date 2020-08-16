@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.szh.mapper.personMapper"就是com.szh.mapper(包名)+personMapper(personMapper.xml文件去除后缀) -->
+<mapper namespace="com.fh.dao.MovieDao">
+
+    <select id="queryCount" resultType="java.lang.Long" parameterType="com.fh.model.vo.VoMovie">
+    select count(*) from t_movie
+    </select>
+
+    <select id="queryMovieList" resultType="com.fh.model.vo.VoMovie">
+        SELECT tm.mid,tm.name , tm.showTime ,tm.imgUrl ,tm.num, tm.price,tms.hname showHome
+        from t_movie tm LEFT JOIN t_movie_showhome tms on tm.showHome=tms.hid where 1=1
+        <if test="name != null and name != '' " >
+            and  tm.name = #{name}
+        </if>
+        <if test="showHome != null and showHome!='' and showHome != '-1' " >
+            and  tm.showHome = #{showHome}
+        </if>
+
+        <if test="isTicket == 1 " >
+            and  tm.num > 0
+        </if>
+        <if test="isTicket ==2 " >
+            <![CDATA[and  tm.num <= 0 ]]>
+        </if>
+
+         limit #{start},#{length}
+     </select>
+
+
+    <update id="updateNum" >
+        UPDATE t_movie SET num = num -1 WHERE mid = #{id}
+    </update>
+
+</mapper>
